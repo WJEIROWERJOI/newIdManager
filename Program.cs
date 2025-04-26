@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using newIdManager.Components;
-using newIdManager.Components.Account;
+// using newIdManager.Components;
+// using newIdManager.Components.Account;
 using newIdManager.Data;
 using newIdManager.Data.ApplicationUsers;
 using newIdManager.Services;
@@ -14,14 +14,14 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddScoped<IdentityUserAccessor>();
-builder.Services.AddScoped<IdentityRedirectManager>();
+// builder.Services.AddScoped<IdentityUserAccessor>();
+// builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<ApplicationUserService>();
 builder.Services.AddScoped<BoardService>();
 
 builder.Services.AddScoped<CommentService>();
 builder.Services.AddScoped<PostService>();
-builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+// builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
 
 builder.Services.Configure<IdentityOptions>(options =>
