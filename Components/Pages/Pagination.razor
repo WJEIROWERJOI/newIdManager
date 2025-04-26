@@ -1,0 +1,56 @@
+﻿@using System.Web
+@using System.Text.RegularExpressions
+@inject NavigationManager nav
+
+<div class="d-flex justify-content-center my-4">
+	<nav>
+		<ul class="pagination">
+
+			<li class="page-item @(IsFirstPage ? "disabled" : "")">
+				<button class="page-link" @onclick="GoToPrevious" disabled="@IsFirstPage">이전</button>
+			</li>
+
+			@for (int i = ((CurrentPage - 1) / 10) * 10 + 1; i <= Math.Min((((CurrentPage - 1) / 10) * 10 + 10), TotalPages); i++)
+			{
+				int page = i;
+				<li class="page-item @(i == CurrentPage ? "active" : "")">
+					<button class="page-link" @onclick="() => GoToPage(page)">
+						@i
+					</button>
+				</li>
+			}
+
+			<li class="page-item @(IsLastPage ? "disabled" : "")">
+				<button class="page-link" @onclick="GoToNext" disabled="@IsLastPage">다음</button>
+			</li>
+
+		</ul>
+	</nav>
+</div>
+
+
+
+
+@code {
+	[Parameter] public int TotalPages { get; set; }
+	[Parameter] public int CurrentPage { get; set; }
+
+
+
+	private bool IsFirstPage => CurrentPage <= 1;
+	private bool IsLastPage => CurrentPage >= TotalPages;
+
+	private void GoToPage(int page)
+	{
+		var newUri = new UriBuilder(nav.Uri);
+		var query = HttpUtility.ParseQueryString(newUri.Query);
+		query["page"] = page.ToString();
+		newUri.Query = query.ToString();
+
+		nav.NavigateTo(newUri.ToString(), forceLoad: true);
+
+	}
+
+	private void GoToPrevious() => GoToPage(CurrentPage - 1);
+	private void GoToNext() => GoToPage(CurrentPage + 1);
+}

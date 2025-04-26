@@ -1,0 +1,104 @@
+﻿@page "/register"
+@inject ApplicationUserService applicationUserService
+@rendermode InteractiveServer
+
+<h3>회원 가입</h3>
+<hr />
+<div class="row d-flex justify-content-center mt-3">
+	<div class="col-md-4">
+		<EditForm Model="@registerDto" OnValidSubmit="@UserRegister">
+			<DataAnnotationsValidator />
+			<ValidationSummary />
+			<div class="form-floating mb-3">
+				<InputText id="RegisterId" @bind-Value="registerDto.UserName" class="form-control" placeholder="아이디" />
+				<label for="RegisterId">아이디</label>
+			</div>
+			<div class="form-floating mb-3">
+				<InputText id="RegisterPwd" type="password" @bind-Value="registerDto.Password" class="form-control"
+						   placeholder="비밀번호" />
+				<label for="RegisterPwd">비밀번호</label>
+			</div>
+
+			<div class="form-floating mb-3">
+
+				<AuthorizeView Roles="Admin">
+					<Authorized Context="auth">
+						<select id="RegisterRole" class="form-select" @bind="registerDto.Role">
+							<option value="Admin">Admin</option>
+							<option value="User">User</option>
+						</select>
+
+					</Authorized>
+
+					<NotAuthorized Context="nuth">
+						<select id="RegisterRole" class="form-select" @bind="registerDto.Role">
+
+							<option value="Admin" style="background-color:rgb(207, 207, 207 disabled);" disabled>Admin</option>
+							@* <option value="Admin" style="background-color:rgb(207, 207, 207);">Admin</option> *@
+							<option value="User">User</option>
+						</select>
+
+					</NotAuthorized>
+				</AuthorizeView>
+				<label for="RegisterRole">Role 선택</label>
+			</div>
+
+			<div class="form-floating mb-3">
+				<InputText id="RegisterEmail" @bind-Value="registerDto.Email" class="form-control" placeholder="이메일" />
+				<label for="RegisterEmail">이메일</label>
+			</div>
+			<div class="d-flex justify-content-end mt-3">
+				<button class="w-100 btn btn-primary btn-lg" type="submit">가입</button>
+			</div>
+		</EditForm>
+	</div>
+
+	<div class="d-flex justify-content-center mt-3">
+
+		@if (error != null)
+		{
+			<p style="color:red">@error</p>
+
+		}
+		@if (success != null)
+		{
+			<p style="color:green">@success</p>
+		}
+	</div>
+</div>
+
+
+
+@code {
+	private ApplicationRegisterDto registerDto = new();
+	private string? error;
+	private string? success;
+
+	private async Task UserRegister()
+	{
+		if (string.IsNullOrWhiteSpace(registerDto.UserName) || string.IsNullOrWhiteSpace(registerDto.Password) ||
+		string.IsNullOrWhiteSpace(registerDto.Email))
+		{
+			error = "아이디와 비밀번호 이메일 모두 입력하세요.";
+			return;
+		}
+		if (await applicationUserService.IsUserExistAsync(registerDto.UserName))
+		{
+			error = "이미 존재하는 아이디입니다.";
+			return;
+		}
+		var registerResult = await applicationUserService.RegisterAsync(registerDto);
+		if (registerResult.Succeeded)
+		{
+			registerDto = new();
+			error = null;
+			success = "회원가입이 성공하였습니다.";
+		}
+		else
+		{
+			error = string.Join("\n", registerResult.Errors.Select(e => e.Description));
+			success = null;
+		}
+		StateHasChanged();
+	}
+}

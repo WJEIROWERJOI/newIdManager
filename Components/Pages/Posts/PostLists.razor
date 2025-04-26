@@ -1,0 +1,162 @@
+﻿@page "/posts/lists"
+@using Microsoft.EntityFrameworkCore
+@using newIdManager.Data.Posts
+@inject ApplicationDbContext context
+@inject PostService pstService
+@rendermode InteractiveServer
+@inject NavigationManager nav
+
+<h3>PostLists</h3>
+
+<!-- 검색 영역 -->
+
+<div style="display:flex;justify-content: flex-end;">
+
+	<div class="input-group" style="max-width: fit-content;">
+	
+	@if (!string.IsNullOrWhiteSpace(searchUser))
+		{
+			<button @onclick="CancelSearch" class="btn btn-secondary">검색 취소</button>
+		}
+		<select class="form-select form-select-sm" @bind="searchTarget">
+			<option value="Title">제목</option>
+			<option value="Content">내용</option>
+			<option value="Author">작성자</option>
+		</select>
+		<InputText class="form-control" @bind-Value="@searchUser" />
+		<button type="button" class="btn btn-primary" @onclick="SearchUser">검색</button>
+
+		
+	</div>
+</div>
+
+<table class="table">
+	<thead style="background-color:antiquewhite;" class="text-center">
+		<tr>
+			<th scope="col">글번호</th>
+			<th scope="col">제목</th>
+			@* <th scope="col" >Content</th> *@
+			<th scope="col">작성자</th>
+			<th scope="col">CreatedAt</th>
+			<th scope="col">UpdatedAt</th>
+			<th scope="col">댓글수</th>
+			<th scope="col">조회수</th>
+			<th scope="col">옵션</th>
+		</tr>
+	</thead>
+	<tbody class="text-center">
+		@foreach (var pst in posts)
+		{
+
+			<tr>
+				<td>@pst.Id</td>
+				<td><a href="/posts/lists/@pst.Id" @onclick="()=>ViewPlus(pst.Id)">@pst.Title</a></td>
+				@* <td><a href="/posts/lists/@pst.Id">@pst.Content</a></td> *@
+				<td>@pst.Author</td>
+				<td>@pst.CreatedAt.ToString("MM월dd일")</td>
+				<td>@pst.UpdatedAt.ToString("MM월dd일 hh:mm")</td>
+				<td>@pst.CommentCount</td>
+				<td>@pst.Views</td>
+				@* <td> *@
+				@*         <button @onclick="() => BeginEdit(usr)">수정</button> *@
+
+				<AuthorizeView Roles="Admin">
+					<Authorized>
+						<button class="btn btn-primary btn-sm" @onclick="() => deletePost(pst.Id)">삭제</button>
+					</Authorized>
+					<NotAuthorized>
+						<button class="btn btn-primary btn-sm" disabled>삭제</button>
+					</NotAuthorized>
+				</AuthorizeView>
+				@*     </td> *@
+			</tr>
+
+		}
+	</tbody>
+</table>
+@* <div style="display: flex; justify-content: flex-end; margin-top: 10px;"> *@
+<div class="d-flex justify-content-center mt-3">
+	<NavLink class="btn btn-primary" href="/posts/create">
+		글쓰기
+	</NavLink>
+</div>
+
+
+<!-- 페이징 컴포넌트 -->
+<Pagination TotalPages="@totalPage" CurrentPage="@Page" />
+
+
+@code {
+	private List<PostEntity> posts = new();
+
+	[SupplyParameterFromQuery]
+	[Parameter]
+	public int Page { get; set; } = 1;
+	[SupplyParameterFromQuery]
+	[Parameter]
+	public string? searchUser { get; set; }
+
+	[SupplyParameterFromQuery]
+	[Parameter]
+	public string? searchTarget { get; set; } = "Title";
+
+	private int totalPage;
+	private int pageSize = 3;
+
+
+
+
+	// protected override async Task OnInitializedAsync()
+	// {
+	// 	posts = await context.PostEntities.ToListAsync();
+	// 	foreach (var pst in posts)
+	// 	{
+	// 		await pstService.CountCommentAsync(pst.Id);
+	// 	}
+	// }
+
+
+	protected override async Task OnParametersSetAsync()
+	{
+		if (string.IsNullOrWhiteSpace(searchTarget))
+		{
+			searchTarget = "Title";
+		}
+		if (!string.IsNullOrWhiteSpace(searchUser) && !string.IsNullOrWhiteSpace(searchTarget))
+		{
+			totalPage = ((await pstService.GetNumberOfSearchPostAsync(searchUser, searchTarget) - 1) / pageSize) + 1;
+			posts = await pstService.SearchPostsAsync(searchUser, searchTarget, Page, pageSize);
+		}
+		else
+		{
+			posts = await pstService.GetPagePostsAsync(Page, pageSize);
+			totalPage = ((await pstService.GetNumberOfPostAsync() - 1) / pageSize) + 1;
+		}
+		foreach (var pst in posts)
+		{
+			await pstService.CountCommentAsync(pst.Id);
+		}
+
+	}
+	private async Task deletePost(int id)
+	{
+		await pstService.DeletePost(id);
+		nav.NavigateTo($"/posts/lists?Page={Page}&searchTarget={searchTarget}&searchUser={searchUser}", forceLoad: true);
+	}
+
+	private async Task ViewPlus(int id)
+	{
+		await pstService.ViewPlus(id);
+		// nav.NavigateTo($"/posts/lists?Page={Page}&searchTarget={searchTarget}&searchUser={searchUser}", forceLoad: true);
+	}
+
+	private void SearchUser()
+	{
+		nav.NavigateTo($"/posts/lists?Page=1&searchTarget={searchTarget}&searchUser={searchUser}", forceLoad: true); // 1번 페이지로 검색 결과 확인
+	}
+
+	private void CancelSearch()
+	{
+		nav.NavigateTo("/posts/lists?Page=1");
+	}
+}

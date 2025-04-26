@@ -1,0 +1,91 @@
+﻿<h3>NavDump</h3>
+
+<div class="nav-item px-3">
+	<NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+		<span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+	</NavLink>
+</div>
+<div class="nav-item px-3">
+	<NavLink class="nav-link" href="/posts/lists/">
+		<span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Post Lists
+	</NavLink>
+</div>
+<div class="nav-item px-3">
+	<NavLink class="nav-link" href="counter">
+		<span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
+	</NavLink>
+</div>
+<div class="nav-item px-3">
+	<NavLink class="nav-link" href="List">
+		<span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> List
+	</NavLink>
+</div>
+
+
+@* @(isOpen ? "-" : "+") *@
+<div @onclick="() => isOpen = !isOpen" class="nav-item px-3">
+	<button class="nav-link">
+		<span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span>Claims
+	</button>
+	@if (isOpen)
+	{
+		<ul class="submenu">
+			<li><NavLink href="/userclaims"><button>유저 클레임</button></NavLink></li>
+			<li><NavLink href="/list"><button>리스트</button></NavLink></li>
+			<li><NavLink href="/list1"><button>리스트1</button></NavLink></li>
+		</ul>
+	}
+</div>
+
+<div class="nav-item px-3">
+	<NavLink class="nav-link" href="Register">
+		<span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Register
+	</NavLink>
+</div>
+
+<div class="nav-item px-3">
+	<NavLink class="nav-link" href="weather">
+		<span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
+	</NavLink>
+</div>
+
+<div class="nav-item px-3">
+	<NavLink class="nav-link" href="auth">
+		<span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Auth Required
+	</NavLink>
+</div>
+
+<AuthorizeView>
+	<Authorized>
+		<div class="nav-item px-3">
+			<NavLink class="nav-link" href="Account/Manage">
+				<span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name
+			</NavLink>
+		</div>
+		<div class="nav-item px-3">
+			<form action="Account/Logout" method="post">
+				<AntiforgeryToken />
+				<input type="hidden" name="ReturnUrl" value="@currentUrl" />
+				<button type="submit" class="nav-link">
+					<span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
+				</button>
+			</form>
+		</div>
+	</Authorized>
+	<NotAuthorized>
+		<div class="nav-item px-3">
+			<NavLink class="nav-link" href="Account/Register">
+				<span class="bi bi-person-nav-menu" aria-hidden="true"></span> Register
+			</NavLink>
+		</div>
+		<div class="nav-item px-3">
+			<NavLink class="nav-link" href="Account/Login">
+				<span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
+			</NavLink>
+		</div>
+	</NotAuthorized>
+</AuthorizeView>
+@code {
+	private bool isOpen = false;
+	private string? currentUrl = string.Empty;
+}

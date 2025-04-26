@@ -1,0 +1,206 @@
+﻿@using System.Web
+@rendermode InteractiveServer
+@inject ApplicationUserService applicationUserService
+@inject NavigationManager nav
+@* @inject IJSRuntime js *@
+
+<style>
+	.toast {
+	position: fixed;
+	top: 10px;
+	right: 10px;
+	background-color: #444;
+	color: white;
+	padding: 10px;
+	border-radius: 5px;
+	display: none;
+	z-index: 9999;
+	}
+
+	.modal-background {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5);
+	z-index: 999;
+	}
+
+	.modal-content {
+	position: fixed;
+	top: 40%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background: white;
+	padding: 2rem;
+	border-radius: 8px;
+	z-index: 1000;
+	/* text-align: center; */
+	position: relative;
+	max-width: 500px;
+	width: 90%;
+	max-height: 80vh;
+	overflow-y: auto;
+	box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+	}
+
+	.close-button {
+	position: absolute;
+	top: 8px;
+	right: 12px;
+	border: none;
+	background: none;
+	font-size: 1.5rem;
+	cursor: pointer;
+	}
+</style>
+
+
+@if (ShowModal)
+{
+	if(WhatVisible){
+		<div class="modal-background" @onclick="CloseModal">
+			<div class="modal-content" @onclick:stopPropagation>
+				<button class="close-button" @onclick="CloseModal">×</button>
+
+				<!-- 모달 제목 -->
+				<h5 class="modal-title" style="margin-bottom:16px;">수정</h5>
+
+				<EditForm Model="@updateUser" OnValidSubmit="UpdateUser">
+					<table style="width:100%; border:1px solid #ddd;">
+						<tbody>
+							<tr>
+								<td style="padding:8px; border:1px solid #ddd;">UserName</td>
+								<td style="padding:8px; border:1px solid #ddd;"><InputText @bind-Value="updateUser.UserName" class="form-control" /></td>
+							</tr>
+							@* <tr> *@
+							@* 	<td style="padding:8px; border:1px solid #ddd;">Password</td> *@
+							@* 	<td style="padding:8px; border:1px solid #ddd;"><InputText @bind-Value="updateUser.NewPassword" class="form-control" /></td> *@
+							@* </tr> *@
+							<tr>
+								<td style="padding:8px; border:1px solid #ddd;">Email</td>
+								@* <td style="padding:8px; border:1px solid #ddd;"><InputText @bind-Value="updateUser.Email" type="email" class="form-control" /></td> *@
+
+								<td style="padding:8px; border:1px solid #ddd;"><InputText @bind-Value="updateUser.Email" class="form-control" /></td>
+							</tr>
+							<tr>
+								<td style="padding:8px; border:1px solid #ddd; border-bottom:1px solid #ddd;">Role</td>
+								<td style="padding:8px; border:1px solid #ddd; border-bottom:1px solid #ddd;">
+									<select @bind="updateUser.Role" class="form-select">
+										<option value="Admin">Admin</option>
+										<option value="User">User</option>
+									</select>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<div class="modal-actions" style="text-align:right; margin-top:16px;">
+						<button type="submit" class="btn btn-primary" style="margin-right:8px;">저장</button>
+						<button type="button" class="btn btn-secondary" @onclick="CloseModal">취소</button>
+					</div>
+				</EditForm>
+
+			</div>
+		</div>
+	}
+	else
+	{
+		<div class="modal-background" @onclick="CloseModal">
+			<div class="modal-content" @onclick:stopPropagation>
+				<button class="close-button" @onclick="CloseModal">×</button>
+
+				<!-- 모달 제목 -->
+				<h5 class="modal-title" style="margin-bottom:16px;">수정</h5>
+
+				<EditForm Model="@updateUser" OnValidSubmit="UpdatePWDUser">
+					<table style="width:100%; border:1px solid #ddd;">
+						<tbody>
+							<tr>
+								<td style="padding:8px; border:1px solid #ddd;">UserName</td>
+								<td style="padding:8px; border:1px solid #ddd;"><InputText @bind-Value="updateUser.UserName" class="form-control" disabled /></td>
+							</tr>
+							<tr>
+								<td style="padding:8px; border:1px solid #ddd;">Password</td>
+								<td style="padding:8px; border:1px solid #ddd;"><InputText @bind-Value="updateUser.NewPassword" class="form-control" /></td>
+							</tr>
+							<tr>
+								<td style="padding:8px; border:1px solid #ddd;">Email</td>
+								@* <td style="padding:8px; border:1px solid #ddd;"><InputText @bind-Value="updateUser.Email" type="email" class="form-control" /></td> *@
+
+								<td style="padding:8px; border:1px solid #ddd;"><InputText @bind-Value="updateUser.Email" class="form-control" disabled /></td>
+							</tr>
+							<tr>
+								<td style="padding:8px; border:1px solid #ddd; border-bottom:1px solid #ddd;">Role</td>
+								<td style="padding:8px; border:1px solid #ddd; border-bottom:1px solid #ddd;">
+									<select @bind="updateUser.Role" class="form-select" disabled>
+										<option value="Admin">Admin</option>
+										<option value="User">User</option>
+									</select>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<div class="modal-actions" style="text-align:right; margin-top:16px;">
+						<button type="submit" class="btn btn-primary" style="margin-right:8px;">저장</button>
+						<button type="button" class="btn btn-secondary" @onclick="CloseModal">취소</button>
+					</div>
+				</EditForm>
+
+			</div>
+		</div>
+	}
+}
+
+@code {
+	[Parameter]
+	public bool ShowModal { get; set; } = false;
+	[Parameter]
+	public bool WhatVisible { get; set; } = false;
+	[Parameter]
+	public ApplicationUpdateDto updateUser { get; set; } = new();
+	
+	private void CloseModal()
+	{
+		ShowModal = false;
+	}
+	async Task UpdateUser()
+	{
+		var result = await applicationUserService.UpdateAsync(updateUser);
+		if (result.Succeeded)
+		{
+
+			// Console.WriteLine("성공 했습니다.");
+			// await js.InvokeVoidAsync("showAlert", "이것은 성공 Alert Pop업 입니다잉");
+			// message = "수정 완료!";
+			// editingUserName = null;
+			// users = await applicationUserService.GetPageUsersAsync(Page, pageSize);
+			// nav.NavigateTo($"/list?Page={Page}&searchTarget={searchTarget}&searchUser={searchUser}", forceLoad: true);
+		}
+		else
+		{
+
+			// await js.InvokeVoidAsync("showAlert", "이것은 실패Alert Pop업 입니다잉");
+			// Console.WriteLine($"오류: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+			// message = $"오류: {string.Join(", ", result.Errors.Select(e => e.Description))}";
+		}
+
+		CloseModal();
+		nav.NavigateTo(nav.Uri,forceLoad:true);
+
+
+	}
+
+	async Task UpdatePWDUser()
+	{
+		var result = await applicationUserService.UpdatePasswordAsync(updateUser);
+		if (result.Succeeded) { }
+		else { }
+		CloseModal();
+		nav.NavigateTo(nav.Uri, forceLoad: true);
+	}
+
+
+}

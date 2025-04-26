@@ -1,0 +1,80 @@
+﻿@page "/list1"
+@using System.Web
+@inject NavigationManager ngm
+@inject ApplicationUserService applicationUserService
+@rendermode InteractiveServer
+
+<h1>관리자 전용 사용자 리스트</h1>
+<hr />
+
+@if (!_hasAccess)
+{
+    <table style="border:2px solid black; width:100%;">
+        <thead style="background-color: #ffcccc;">
+            <tr>
+                <th>UserName</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>CreatedAt</th>
+                <th>LastUpdatedAt</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var usr in PageUsers)
+            {
+                <tr>
+                    <td>@usr.UserName</td>
+                    <td>@usr.Email</td>
+                    <td>@usr.Role</td>
+                    <td>@usr.CreatedAt.ToString("yyyy-MM-dd")</td>
+                    <td>@usr.LastUpdatedAt.ToString("yyyy-MM-dd")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@* <button @onclick="TempMethod">버튼</button> *@
+
+
+
+
+
+ <Pagination TotalPages="@totalPage" CurrentPage="@Page"/>
+
+@code {
+
+    [SupplyParameterFromQuery]
+    [Parameter]
+    public int Page { get; set; } = 1;
+    private int totalPage;
+    private int pageSize = 5;
+
+
+
+    private bool _hasAccess = false;
+
+
+
+
+    private List<ApplicationViewDto> PageUsers = new();
+
+    // public async Task<List<ApplicationViewDto>> GetPageUsersAsync(int Page, int amount)
+
+    protected override async Task OnInitializedAsync()
+    {
+        PageUsers = await applicationUserService.GetPageUsersAsync(Page,pageSize);
+        totalPage = ((await applicationUserService.GetNumberOfUser()) / pageSize) + 1;
+    }
+
+    // private void TempMethod()
+    // {
+    //     Console.WriteLine($"Page = {@Page},TotalPage = {@totalPage}");
+    //     StateHasChanged();
+    // }
+
+    // private void GoToPage(int i)
+    // {
+    //     Console.WriteLine($"{ngm.Uri}            \t    {ngm.BaseUri}");
+    //     ngm.NavigateTo($"/list1?Page={i}",forceLoad:true);
+    // }
+}

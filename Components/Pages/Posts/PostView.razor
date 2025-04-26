@@ -1,0 +1,80 @@
+﻿@page "/posts/lists/{PostId:int}"
+@using System.Reflection
+@using System.Security.Claims
+@using newIdManager.Data.ApplicationUsers
+@using newIdManager.Data.Posts
+@inject ApplicationDbContext context
+@inject AuthenticationStateProvider authProvider
+@inject ApplicationUserService applicationUserService
+@inject PostService postService
+
+
+<h3>PostView</h3>
+
+
+@* <input class="form-control" type="text" value="Readonly input here..." aria-label="readonly input example" readonly> *@
+
+
+
+@* <div class="mb-3 row"> *@
+@* 	<label for="staticEmail" class="col-sm-2 col-form-label">제목</label> *@
+@* 	<div class="col-sm-10"> *@
+@* 		<InputText readonly class="form-control-plaintext" id="staticEmail" @bind-value="@pst.Title"/> *@
+@* 	</div> *@
+@* </div> *@
+@* <div class="mb-3 row"> *@
+@* 	<label for="staticEmail1" class="col-sm-2 col-form-label">작성자</label> *@
+@* 	<div class="col-sm-10"> *@
+@* 		<InputText readonly class="form-control-plaintext" id="staticEmail1" @bind-value="@pst.Author" /> *@
+@* 	</div> *@
+@* </div> *@
+@* <div class="mb-3 row"> *@
+@* 	<label for="staticEmail2" class="col-sm-2 col-form-label">내용</label> *@
+@* 	<div class="col-sm-10"> *@
+@* 		<InputTextArea readonly class="form-control-plaintext" style="min-height: 400px;" id="staticEmail2" @bind-value="@pst.Content" /> *@
+@* 	</div> *@
+@* </div> *@
+
+ @* d-flex justify-content-center *@
+<div class="card shadow-sm border-0 mb-4" style="max-width:50%; min-width:500px;">
+	<div class="card-body">
+		<h3 class="card-title fw-bold mb-3">@pst.Title</h3>
+		<div class="d-flex justify-content-between mb-4">
+			<div>
+				<span class="badge bg-secondary me-2">작성자</span>
+				<span class="text-muted">@pst.Author</span>
+			</div>
+			@* <div> *@
+			@* 	<span class="badge bg-light text-dark">작성일</span> *@
+			@* 	<span class="text-muted">@pst.CreatedAt.ToString("yyyy-MM-dd HH:mm")</span> *@
+			@* </div> *@
+		</div>
+		<div class="border rounded p-3 bg-light" style="min-height: 300px; white-space: pre-wrap;">
+			@pst.Content
+		</div>
+
+	</div>
+</div>
+	<a class="btn btn-primary px-4 py-2" href="/posts/lists/update/@PostId">수정</a>
+
+
+<hr />
+<Comment PostId="@PostId" />
+
+
+@code {
+	[Parameter]
+	public int PostId { get; set; }
+	// private ClaimsPrincipal? user;
+	private PostCreateDto pst = new();
+	// private ApplicationUser? applicationUser;
+
+	protected override async Task OnInitializedAsync()
+	{
+		pst = await postService.GetPostByIdAsync(PostId);
+	}
+
+
+
+
+}

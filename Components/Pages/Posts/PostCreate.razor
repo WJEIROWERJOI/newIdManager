@@ -1,0 +1,56 @@
+﻿@page "/posts/create"
+@using System.Security.Claims
+@using newIdManager.Data.Posts
+@inject PostService postService
+@inject NavigationManager ngm
+@inject AuthenticationStateProvider AuthProvider
+@rendermode InteractiveServer
+
+<h3>PostCreate</h3>
+
+<EditForm Model="@dto" OnValidSubmit="@CreatePost" FormName="CreatePostForm" class="max-w-2xl mx-auto space-y-4">
+	<DataAnnotationsValidator />
+	<ValidationSummary />
+	<div style="padding:10px;">
+		<label for="title" class="form-label fw-semibold">제목</label>
+		<InputText id="title" @bind-Value="@dto.Title" class="form-control form-control-sm" placeholder="제목을 입력하세요" />
+	</div>
+	<div style="padding:10px;">
+		<label for="author" class="form-label fw-semibold">작성자</label>
+		<InputText id="author" @bind-Value="@dto.Author" class="form-control form-control-sm" placeholder="작성자 이름" />
+	</div>
+	<div style="padding:10px;">
+		<label for="content" class="form-label fw-semibold">내용</label>
+		<InputTextArea id="content" @bind-Value="@dto.Content" class="form-control form-control-sm" style="min-height: 400px;" placeholder="내용을 입력하세요" />
+	</div>
+	<div class="d-flex justify-content-end gap-2" style="padding:10px;">
+		<button type="submit" class="btn btn-primary px-4 py-2">저장</button>
+		<button type="button" class="btn btn-outline-secondary px-4 py-2" @onclick="CancelPost">취소</button>
+	</div>
+</EditForm>
+
+@code {
+	[SupplyParameterFromForm]
+	PostCreateDto dto { get; set; } = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		var authState = await AuthProvider.GetAuthenticationStateAsync();
+		var user = authState.User;
+		if (user?.Identity !=null && user.Identity.IsAuthenticated)
+		{
+			dto.Author = user.Identity?.Name?? string.Empty;
+		}
+	}
+	private async Task CreatePost()
+	{
+		await postService.AddPostAsync(dto);
+		ngm.NavigateTo("/posts/lists/",forceLoad:true);
+	}
+	private void CancelPost()
+	{
+		Console.WriteLine("취소버튼을 눌렀숨다");
+		dto = new();
+		ngm.NavigateTo("/posts/lists?page=1", forceLoad: true);
+	}
+}

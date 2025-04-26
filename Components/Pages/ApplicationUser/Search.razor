@@ -1,0 +1,111 @@
+﻿@page "/list/search"
+@inject ApplicationUserService applicationUserService
+@rendermode InteractiveServer
+@using System.Diagnostics
+@using newIdManager.Data.ApplicationUsers
+
+<h3>Search</h3>
+<hr />
+<style>
+	th {
+	border-width: 1px;
+	border: 1px solid black;
+	padding: 1px;
+	}
+
+	td {
+	border-width: 1px;
+	border: 1px solid black;
+	padding: 1px;
+	}
+</style>
+
+
+<Pagination TotalPages="@totalPage" CurrentPage="@Page" />
+@code {
+	private List<ApplicationViewDto> users = new();
+	private string? editingUserName = null;
+	private ApplicationUpdateDto updateUser = new();
+	private string? message;
+	private bool IsVisible = false;
+	private string searchUser = string.Empty;
+	private string searchTarget = "UserName";
+
+	[SupplyParameterFromQuery]
+	[Parameter]
+	public int Page { get; set; } = 1;
+	private int totalPage;
+	private int pageSize = 3;
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		users = await applicationUserService.GetPageUsersAsync(Page, pageSize);
+		totalPage = ((await applicationUserService.GetNumberOfUser()) - 1 / pageSize) + 1;
+		// users = await applicationUserService.GetAllUsersAsync();
+	}
+
+	void BeginEdit(ApplicationViewDto usr)
+	{
+		IsVisible = true;
+		editingUserName = usr.UserName;
+		updateUser = new ApplicationUpdateDto
+			{
+				Id = usr.Id,
+				UserName = usr.UserName,
+				Email = usr.Email,
+				Role = usr.Role
+			};
+		StateHasChanged(); // UI 새로고침
+	}
+
+	void CancelEdit()
+	{
+		IsVisible = false;
+		editingUserName = null;
+		StateHasChanged(); // UI 새로고침
+	}
+
+	async Task UpdateUser()
+	{
+		var result = await applicationUserService.UpdateAsync(updateUser);
+		if (result.Succeeded)
+		{
+			message = "수정 완료!";
+			editingUserName = null;
+			users = await applicationUserService.GetPageUsersAsync(Page, pageSize);
+		}
+		else
+		{
+			message = $"오류: {string.Join(", ", result.Errors.Select(e => e.Description))}";
+		}
+		IsVisible = false;
+		StateHasChanged(); // UI 새로고침
+	}
+
+	async Task deleteUser(string name)
+	{
+		var result = await applicationUserService.DeleteAsync(name);
+		if (result.Succeeded)
+		{
+			message = $"{name} 이 삭제되었습니다.";
+			users = await applicationUserService.GetPageUsersAsync(Page, pageSize);
+		}
+		else
+		{
+			message = $"삭제 실패: {string.Join(", ", result.Errors.Select(e => e.Description))}";
+		}
+
+		StateHasChanged(); // UI 새로고침
+	}
+
+
+	private async Task SearchUser()
+	{
+		totalPage = ((await applicationUserService.GetNumberOfSearchUser(searchUser, searchTarget) - 1) / pageSize) + 1;
+		users = await applicationUserService.SearchUsersAsync(searchUser, searchTarget, Page, pageSize);
+		StateHasChanged();
+	}
+
+
+}

@@ -1,0 +1,63 @@
+﻿@page "/posts/lists/update/{PostId:int}"
+@using newIdManager.Data.Posts
+@using System.Security.Claims
+@inject PostService postService
+@inject NavigationManager ngm
+@inject AuthenticationStateProvider AuthProvider
+@rendermode InteractiveServer
+
+<h3>PostUpdate</h3>
+
+<EditForm Model="@dto" OnValidSubmit="@UpdatePost" FormName="CreatePostForm" class="max-w-2xl mx-auto space-y-4">
+	<DataAnnotationsValidator />
+	<ValidationSummary />
+	<div style="padding:10px;">
+		<label for="title" class="form-label fw-semibold">제목</label>
+		<InputText id="title" @bind-Value="@dto.Title" class="form-control form-control-sm" />
+	</div>
+	<div style="padding:10px;">
+		<label for="author" class="form-label fw-semibold">작성자</label>
+		<InputText id="author" @bind-Value="@dto.Author" class="form-control form-control-sm" disabled />
+	</div>
+	<div style="padding:10px;">
+		<label for="content" class="form-label fw-semibold">내용</label>
+		<InputTextArea id="content" @bind-Value="@dto.Content" class="form-control form-control-sm" style="min-height: 400px;" placeholder="내용을 입력하세요" />
+	</div>
+	<div class="d-flex justify-content-end gap-2" style="padding:10px;">
+		<button type="submit" class="btn btn-primary px-4 py-2">저장</button>
+		<button type="button" class="btn btn-outline-secondary px-4 py-2" @onclick="CancelPost">취소</button>
+	</div>
+</EditForm>
+
+
+@code {
+
+	[Parameter]
+	public int PostId { get; set; }
+
+	[SupplyParameterFromForm]
+	PostCreateDto dto { get; set; } = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		// var authState = await AuthProvider.GetAuthenticationStateAsync();
+		// var user = authState.User;
+		// if (user?.Identity != null && user.Identity.IsAuthenticated)
+		// {
+		// 	dto.Author = user.Identity?.Name ?? string.Empty;
+		// }
+		dto = await postService.GetPostByIdAsync(PostId);
+
+	}
+
+	private async Task UpdatePost()
+	{
+		await postService.UpdatePostAsync(dto, PostId);
+		ngm.NavigateTo($"/posts/lists/{PostId}", forceLoad: true);
+	}
+	private void CancelPost()
+	{
+		dto = new();
+		ngm.NavigateTo("/posts/lists?page=1", forceLoad: true);
+	}
+}

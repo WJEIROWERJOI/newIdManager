@@ -1,0 +1,27 @@
+﻿@page "/logout"
+@using newIdManager.Components.Account
+@inject ApplicationUserService applicationUserService
+@inject IdentityRedirectManager RedirectManager
+@* @inject IJSRuntime JS *@
+@* @rendermode InteractiveServer *@
+
+<h2> 로그아웃 중...</h2>
+
+
+@code {
+	[Parameter]
+	[SupplyParameterFromQuery]
+	public string? returnUrl { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		await applicationUserService.ApplicationUserLogOut();
+		var goTo = string.IsNullOrEmpty(returnUrl) ? "/" : "/" + returnUrl;
+		Console.WriteLine(returnUrl);
+		Console.WriteLine(goTo);
+		RedirectManager.RedirectTo(goTo);
+	}
+
+
+
+}
