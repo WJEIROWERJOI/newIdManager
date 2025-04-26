@@ -42,6 +42,13 @@ namespace newIdManager.Services
         //}
 
         //u
+        public async Task UpdateComment(CommentEntity commentEntity)
+        {
+            _context.CommentEntities.Update(commentEntity);
+            await _context.SaveChangesAsync();
+        }
+
+
 
         //d
         public async Task DeleteComment(int id)
