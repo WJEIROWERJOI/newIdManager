@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using newIdManager.Components.Pages.Posts;
 using newIdManager.Data;
 using newIdManager.Data.Posts;
 
