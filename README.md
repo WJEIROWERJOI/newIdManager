@@ -1,2 +1,5 @@
 ﻿# newIdManager
-안녕하세요
+ASP.NET Identity 활용
+
+사용자
+게시판
