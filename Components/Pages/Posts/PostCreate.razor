@@ -1,12 +1,14 @@
 ﻿@page "/posts/create"
 @using System.Security.Claims
-@using newIdManager.Data.Posts
 @inject PostService postService
 @inject NavigationManager ngm
 @inject AuthenticationStateProvider AuthProvider
 @rendermode InteractiveServer
 
-<h3>PostCreate</h3>
+<PageTitle>Post Create</PageTitle>
+
+<h3>글쓰기</h3>
+<hr/>
 
 <EditForm Model="@dto" OnValidSubmit="@CreatePost" FormName="CreatePostForm" class="max-w-2xl mx-auto space-y-4">
 	<DataAnnotationsValidator />
@@ -45,11 +47,10 @@
 	private async Task CreatePost()
 	{
 		await postService.AddPostAsync(dto);
-		ngm.NavigateTo("/posts/lists/",forceLoad:true);
+		ngm.NavigateTo("/posts/lists?page=1",forceLoad:true);
 	}
 	private void CancelPost()
 	{
-		Console.WriteLine("취소버튼을 눌렀숨다");
 		dto = new();
 		ngm.NavigateTo("/posts/lists?page=1", forceLoad: true);
 	}

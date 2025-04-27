@@ -5,14 +5,13 @@
 @inject NavigationManager nav
 @rendermode InteractiveServer
 
-<h1>사용자 리스트</h1>
-<hr />
-@if (message != null)
-{
-	<p style="color: green;">@message</p>
-}
+<PageTitle>User List</PageTitle>
 
-<!-- 검색 영역 -->
+<h3>사용자 리스트</h3>
+<hr />
+
+
+@* 검색 *@
 <div style="display:flex;justify-content: flex-end;">
 	<div class="input-group" style="max-width: fit-content;">
 
@@ -44,7 +43,7 @@
 	</div>
 </div>
 
-<!-- 테이블 -->
+@* 표 *@
 <table class="table">
 	<thead>
 		<tr>
@@ -59,60 +58,80 @@
 	<tbody>
 		@foreach (var usr in users)
 		{
-			<tr>
-				<td>@usr.UserName</td>
-				<td>@usr.Email</td>
-				<td>@usr.Role</td>
-				<td>@usr.CreatedAt.ToString("yyyy-MM-dd")</td>
-				<td>@usr.LastUpdatedAt.ToString("yyyy-MM-dd hh:f")</td>
-				<td>
-					<AuthorizeView Roles="Admin">
-						<Authorized>
-							<button class="btn btn-primary btn-sm" @onclick="() => BeginEdit(usr, true)">수정</button>
-							<button class="btn btn-primary btn-sm" @onclick="() => BeginEdit(usr, false)">비번</button>
-							<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-								data-bs-target="#abc">삭제</button>
-							<div class="modal fade" id="abc" data-bs-keyboard="false" tabindex="-1">
-								<div class="modal-dialog modal-dialog-centered">
-									<div class="modal-content">
-										<div class="modal-header">
-											<h1 class="modal-title fs-3" id="abc">확인</h1>
-											<button type="button" class="btn-close" data-bs-dismiss="modal"
+			@if (usr.UserName != "admin")
+			{
+				<tr>
+					<td>@usr.UserName</td>
+					<td>@usr.Email</td>
+					<td>@usr.Role</td>
+					<td>@usr.CreatedAt.ToString("yyyy-MM-dd")</td>
+					<td>@usr.LastUpdatedAt.ToString("yyyy-MM-dd hh:f")</td>
+					<td>
+						<AuthorizeView Roles="Admin">
+							<Authorized>
+								<button class="btn btn-primary btn-sm" @onclick="() => BeginEdit(usr, true)">수정</button>
+								<button class="btn btn-primary btn-sm" @onclick="() => BeginEdit(usr, false)">비번</button>
+								<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+								data-bs-target="#abc">
+									삭제
+								</button>
+								<div class="modal fade" id="abc" data-bs-keyboard="false" tabindex="-1">
+									<div class="modal-dialog modal-dialog-centered">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h1 class="modal-title fs-3" id="abc">확인</h1>
+												<button type="button" class="btn-close" data-bs-dismiss="modal"
 												aria-label="Close"></button>
-										</div>
-										<div class="modal-body">
-											@usr.UserName 을 삭제 하시겠습니까?
-										</div>
-										<div class="modal-footer">
-											<button type="button" class="btn btn-primary"
-												@onclick="() => deleteUser(usr.UserName)">네</button>
-											<button type="button" class="btn btn-secondary"
-												data-bs-dismiss="modal">아니요</button>
+											</div>
+											<div class="modal-body">
+												@usr.UserName 을 삭제 하시겠습니까?
+											</div>
+											<div class="modal-footer">
+												<button type="button" class="btn btn-primary"
+												@onclick="() => deleteUser(usr.UserName)">
+													네
+												</button>
+												<button type="button" class="btn btn-secondary"
+												data-bs-dismiss="modal">
+													아니요
+												</button>
+											</div>
 										</div>
 									</div>
 								</div>
-							</div>
-						</Authorized>
-						<NotAuthorized>
-							<button class="btn btn-secondary btn-sm" @onclick="() => BeginEdit(usr, true)"
-								disabled>수정</button>
-							<button class="btn btn-secondary btn-sm" @onclick="() => BeginEdit(usr, false)"
-								disabled>비번</button>
-							<button class="btn btn-secondary btn-sm" @onclick="() => deleteUser(usr.UserName)"
-								disabled>삭제</button>
-						</NotAuthorized>
-					</AuthorizeView>
-				</td>
-			</tr>
+							</Authorized>
+							<NotAuthorized>
+								<button class="btn btn-secondary btn-sm" @onclick="() => BeginEdit(usr, true)"
+								disabled>
+									수정
+								</button>
+								<button class="btn btn-secondary btn-sm" @onclick="() => BeginEdit(usr, false)"
+								disabled>
+									비번
+								</button>
+								<button class="btn btn-secondary btn-sm" @onclick="() => deleteUser(usr.UserName)"
+								disabled>
+									삭제
+								</button>
+							</NotAuthorized>
+						</AuthorizeView>
+					</td>
+				</tr>
+			}
 		}
 	</tbody>
 </table>
 
-<!-- 수정 폼 -->
+@if (!string.IsNullOrEmpty(message))
+{
+	<p style="color: green;">@message</p>
+}
+
+<!-- 모달 -->
 <UpdateModal ShowModal="@IsVisible" WhatVisible="@WhatVisible" updateUser="@updateUser" />
-@* <UpdatePWDModal ShowModal="@IsVisible" updateUser="@updateUser" /> *@
-<!-- 페이징 컴포넌트 -->
+<!-- 페이징 -->
 <Pagination TotalPages="@totalPage" CurrentPage="@Page" />
+
 
 @code {
 
@@ -123,17 +142,13 @@
 		searchUser = "";
 	}
 
-
-
 	private List<ApplicationViewDto> users = new();
 	private string? editingUserName = null;
 	private ApplicationUpdateDto updateUser = new();
 	private string? message;
-
 	private bool IsVisible = false;
 	private bool WhatVisible = false;
 
-	// Query Parameters
 	[SupplyParameterFromQuery]
 	[Parameter]
 	public string? searchUser { get; set; }
@@ -171,69 +186,19 @@
 		IsVisible = true;
 		editingUserName = usr.UserName;
 		updateUser = new ApplicationUpdateDto
-		{
-			Id = usr.Id,
-			UserName = usr.UserName,
-			Email = usr.Email,
-			Role = usr.Role
-		};
+			{
+				Id = usr.Id,
+				UserName = usr.UserName,
+				Email = usr.Email,
+				Role = usr.Role
+			};
 	}
-	// void BeginPWDEdit(ApplicationViewDto usr)
-	// {
-	// IsPWDVisible = true;
-	// editingUserName = usr.UserName;
-	// updateUser = new ApplicationUpdateDto
-	// {
-	// Id = usr.Id,
-	// UserName = usr.UserName,
-	// Email = usr.Email,
-	// Role = usr.Role
-	// };
-	// }
-
-
-
-	// void CancelEdit()
-	// {
-	// IsVisible = false;
-	// editingUserName = null;
-	// }
-
-	// async Task UpdateUser()
-	// {
-	// var result = await applicationUserService.UpdateAsync(updateUser);
-	// if (result.Succeeded)
-	// {
-	// message = "수정 완료!";
-	// editingUserName = null;
-	// users = await applicationUserService.GetPageUsersAsync(Page, pageSize);
-	// nav.NavigateTo($"/list?Page={Page}&searchTarget={searchTarget}&searchUser={searchUser}", forceLoad: true);
-	// }
-	// else
-	// {
-	// message = $"오류: {string.Join(", ", result.Errors.Select(e => e.Description))}";
-	// }
-	// IsVisible = false;
-	// }
-	// protected override void OnInitialized()
-	// {
-	// 주소가 바뀔 때마다 HandleLocationChanged() 호출
-	// nav.LocationChanged += HandleLocationChanged;
-	// }
-	// private void HandleLocationChanged(object? sender, LocationChangedEventArgs args)
-	// {
-	// 다른 쿼리(or 페이지)로 이동하면 모달 숨기기
-	// IsVisible = false;
-	// StateHasChanged();
-	// }
-
 	private async Task deleteUser(string name)
 	{
 		var result = await applicationUserService.DeleteAsync(name);
 		if (result.Succeeded)
 		{
 			message = $"{name} 이 삭제되었습니다.";
-			// users = await applicationUserService.GetPageUsersAsync(Page, pageSize);
 		}
 		else
 		{

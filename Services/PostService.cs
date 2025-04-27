@@ -1,11 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.CodeAnalysis.Host;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using newIdManager.Data;
-using newIdManager.Data.ApplicationUsers;
 using newIdManager.Data.Posts;
 
 namespace newIdManager.Services
@@ -18,6 +12,7 @@ namespace newIdManager.Services
         {
             _context = context;
         }
+
         //C
         public async Task AddPostAsync(PostCreateDto dto)
         {
@@ -118,7 +113,6 @@ namespace newIdManager.Services
             return await _context.PostEntities.CountAsync();
         }
 
-
         public async Task<PostCreateDto> GetPostByIdAsync(int id)
         {
             var temp = await _context.PostEntities.FindAsync(id);
@@ -130,10 +124,6 @@ namespace newIdManager.Services
                 Content = temp.Content
             };
         }
-
-
-
-
 
         //U
         public async Task<bool> UpdatePostAsync(PostCreateDto dto, int i)
