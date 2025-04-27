@@ -5,9 +5,10 @@ namespace newIdManager.Data.ApplicationUsers;
 public class ApplicationUpdateDto
 {
     public string Id { get; set; } = string.Empty;
-    [Required(ErrorMessage = "Username ÇÊ¿äÇÕ´Ï´Ù.")]
+    [Required(ErrorMessage = "Username ï¿½Ê¿ï¿½ï¿½Õ´Ï´ï¿½.")]
     public string UserName { get; set; } = string.Empty;
-    [Required(ErrorMessage = "Email ÇÊ¿äÇÕ´Ï´Ù.")]
+    [Required(ErrorMessage = "Email ï¿½Ê¿ï¿½ï¿½Õ´Ï´ï¿½.")]
+    [EmailAddress]
     public string Email { get; set; } = string.Empty;
     //[Required]
     //public string OldPassword { get; set; } = string.Empty;
