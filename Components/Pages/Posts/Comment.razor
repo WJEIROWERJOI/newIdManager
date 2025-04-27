@@ -90,12 +90,12 @@
 	protected override async Task OnInitializedAsync()
 	{
 		comments = await commentService.GetAllComments(PostId);
-		@* var authState = await AuthProvider.GetAuthenticationStateAsync();
+		var authState = await AuthProvider.GetAuthenticationStateAsync();
 		var user = authState.User;
 		if (user?.Identity != null && user.Identity.IsAuthenticated)
 		{
 			cmt.Author = user.Identity?.Name ?? string.Empty;
-		} *@
+		}
 	}
 
 	private async Task CreateComment()
@@ -117,11 +117,6 @@
 	{
 		await commentService.DeleteComment(id);
 		ngm.NavigateTo($"/posts/lists/{PostId}", forceLoad: true);
-		// public async Task DeleteComment(int id)
-		// {
-		// var cmt = await GetCommentByIdAsync(id);
-		// await _context.CommentEntities.ExecuteDeleteAsync(cmt);
-		// }
 	}
 
 
