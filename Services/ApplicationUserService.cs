@@ -25,7 +25,7 @@ public class ApplicationUserService
         _roleManager = roleManager;
     }
 
-    //Create
+    //C
     public async Task<IdentityResult> RegisterAsync(ApplicationRegisterDto dto)
     {
         if (await IsUserExistAsync(dto.UserName))
@@ -48,7 +48,7 @@ public class ApplicationUserService
             var roleResult = await _roleManager.CreateAsync(new IdentityRole("Admin"));
             if (!roleResult.Succeeded)
             {
-                return roleResult; // 롤 생성 실패 시 반환
+                return roleResult;
             }
         }
         if (!await _roleManager.RoleExistsAsync("User"))
@@ -56,7 +56,7 @@ public class ApplicationUserService
             var roleResult = await _roleManager.CreateAsync(new IdentityRole("User"));
             if (!roleResult.Succeeded)
             {
-                return roleResult; // 롤 생성 실패 시 반환
+                return roleResult;
             }
         }
 
@@ -67,24 +67,17 @@ public class ApplicationUserService
         //Console.WriteLine(dto.Role.ToString());
         return IdentityResult.Success;
     }
-    //Read
-    /// userName, Email, Role 로 찾아서 List 로 넣는거 ㄱㄱ
 
+    //R
     public async Task<List<ApplicationViewDto>> SearchUsersAsync(string str, string target, int Page, int amount)
     {
-
-        //int Page = await _context.ApplicationUsers.Where(p => p.UserName == str).CountAsync();
         var users = new List<ApplicationUser>();
-        //if (str == "Admin")
-        //{
-        //        users = await _context.ApplicationUsers.Where(p => p.Role == UserRole.Admin).ToListAsync();
 
-        //    }
         switch (target)
         {
             case "UserName":
                 users = await _context.ApplicationUsers
-                    .Where(p => p.UserName == str)
+                    .Where(p => (p.UserName ??"").Contains(str))
                     .OrderByDescending(p => p.CreatedAt)
                     .Skip((Page - 1) * amount)
                     .Take(amount)
@@ -92,7 +85,7 @@ public class ApplicationUserService
                 break;
             case "Email":
                 users = await _context.ApplicationUsers
-                    .Where(p => p.Email == str)
+                    .Where(p => (p.Email??"").Contains(str))
                     .OrderByDescending(p => p.CreatedAt)
                     .Skip((Page - 1) * amount)
                     .Take(amount)
@@ -125,10 +118,10 @@ public class ApplicationUserService
 
         return users.Select(user => new ApplicationViewDto
         {
-            Id = user.Id ?? string.Empty,  // string이라면 기본값 처리
-            UserName = user.UserName ?? "(알 수 없음)",
-            Email = user.Email ?? "(이메일 없음)",
-            Role = user.Role, // enum은 기본값 가짐
+            Id = user.Id,
+            UserName = user.UserName ?? "",
+            Email = user.Email ?? "",
+            Role = user.Role,
             CreatedAt = user.CreatedAt == default ? DateTime.MinValue : user.CreatedAt,
             LastUpdatedAt = user.LastUpdatedAt == default ? DateTime.MinValue : user.LastUpdatedAt
         }).ToList();
@@ -178,10 +171,10 @@ public class ApplicationUserService
         var users = await _context.ApplicationUsers.ToListAsync();
         return users.Select(user => new ApplicationViewDto
         {
-            Id = user.Id ?? string.Empty,  // string이라면 기본값 처리
-            UserName = user.UserName ?? "(알 수 없음)",
-            Email = user.Email ?? "(이메일 없음)",
-            Role = user.Role, // enum은 기본값 가짐
+            Id = user.Id ?? string.Empty,
+            UserName = user.UserName ?? "",
+            Email = user.Email ?? "",
+            Role = user.Role,
             CreatedAt = user.CreatedAt == default ? DateTime.MinValue : user.CreatedAt,
             LastUpdatedAt = user.LastUpdatedAt == default ? DateTime.MinValue : user.LastUpdatedAt
         }).ToList();
@@ -192,10 +185,10 @@ public class ApplicationUserService
         var users = await _context.ApplicationUsers.OrderByDescending(p => p.CreatedAt).Skip((Page - 1) * amount).Take(amount).ToListAsync();
         return users.Select(user => new ApplicationViewDto
         {
-            Id = user.Id ?? string.Empty,  // string이라면 기본값 처리
-            UserName = user.UserName ?? "(알 수 없음)",
-            Email = user.Email ?? "(이메일 없음)",
-            Role = user.Role, // enum은 기본값 가짐
+            Id = user.Id ?? string.Empty,
+            UserName = user.UserName ?? "",
+            Email = user.Email ?? "",
+            Role = user.Role,
             CreatedAt = user.CreatedAt == default ? DateTime.MinValue : user.CreatedAt,
             LastUpdatedAt = user.LastUpdatedAt == default ? DateTime.MinValue : user.LastUpdatedAt
         }).ToList();
@@ -206,13 +199,13 @@ public class ApplicationUserService
         return await _context.ApplicationUsers.CountAsync();
     }
 
-    //Update
+    //U
     public async Task<IdentityResult> UpdateAsync(ApplicationUpdateDto dto)
     {
         var user = await _userManager.FindByIdAsync(dto.Id);
         if (user is null)
         {
-            return IdentityResult.Failed(new IdentityError { Description = "사용자가 존재하지 않습니다." });
+            return IdentityResult.Failed(new IdentityError { Description = "no UserName" });
         }
 
         user.UserName = dto.UserName;
@@ -232,19 +225,19 @@ public class ApplicationUserService
     {
         var user = await _userManager.FindByIdAsync(dto.Id);
         if (user is null)
-        { return IdentityResult.Failed(new IdentityError { Description = "해당 사용자를 찾을 수 없습니다." }); }
+        { return IdentityResult.Failed(new IdentityError { Description = "check user" }); }
         if ((await _userManager.RemovePasswordAsync(user)).Succeeded)
         { return await _userManager.AddPasswordAsync(user, dto.NewPassword); }
         else { return IdentityResult.Failed(); }
     }
-    //Delete
+
+    //D
     public async Task<IdentityResult> DeleteAsync(string name)
     {
         var user = await _userManager.FindByNameAsync(name);
-        if (user is null) return IdentityResult.Failed(new IdentityError { Description = "사용자가 없습니다." });
+        if (user is null) return IdentityResult.Failed(new IdentityError { Description = "no user" });
         return await _userManager.DeleteAsync(user);
     }
-
 
     //login
     public async Task<IdentityResult> ApplicationUserSignIn(ApplicationLoginDto dto)
@@ -257,7 +250,7 @@ public class ApplicationUserService
         }
         else
         {
-            return IdentityResult.Failed(new IdentityError { Description = "로그인 실패 했습니다." });
+            return IdentityResult.Failed(new IdentityError { Description = "fail login" });
         }
     }
 

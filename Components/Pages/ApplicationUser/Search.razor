@@ -1,11 +1,11 @@
-﻿@page "/list/search"
+﻿@* @page "/list/search" *@
 @inject ApplicationUserService applicationUserService
 @rendermode InteractiveServer
-@using System.Diagnostics
-@using newIdManager.Data.ApplicationUsers
+
 
 <h3>Search</h3>
 <hr />
+
 <style>
 	th {
 	border-width: 1px;
@@ -22,6 +22,7 @@
 
 
 <Pagination TotalPages="@totalPage" CurrentPage="@Page" />
+
 @code {
 	private List<ApplicationViewDto> users = new();
 	private string? editingUserName = null;

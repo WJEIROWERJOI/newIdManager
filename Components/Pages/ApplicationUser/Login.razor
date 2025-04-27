@@ -7,8 +7,8 @@
 @inject NavigationManager nav
 @inject AuthenticationStateProvider auth
 
-
-<h3>Login</h3>
+<PageTitle>Login</PageTitle>
+<h3>로그인</h3>
 <hr />
 <EditForm Model="@dto" OnValidSubmit="@LoginUser" FormName="LoginUserForm">
 	<DataAnnotationsValidator />
@@ -17,8 +17,6 @@
 		<InputText @bind-Value="dto.UserName" class="form-control" autocomplete="username" aria-required="true" placeholder="아이디" />
 		<label for="아이디" class="form-label">아이디</label>
 	</div>
-
-
 	<div class="form-floating mb-3">
 		<InputText type="password" @bind-Value="dto.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
 		<label for="비밀번호" class="form-label">비밀번호</label>
@@ -30,29 +28,21 @@
 			Remember me
 		</label>
 	</div>
-
 	<div>
 		<button type="submit" class="w-100 btn btn-lg btn-primary">로그인</button>
 	</div>
-
 </EditForm>
+
 @if (!string.IsNullOrEmpty(loginErrorMessage))
 {
 	<div style="color:red">@loginErrorMessage</div>
 }
 <hr />
 <p>ID : admin /// PW : admin</p>
-<p>ID : user /// PW : user</p>
 
 @code {
-	[Parameter]
-	public string ReturnUrl { get; set; } = string.Empty;
-
-
-
 	[SupplyParameterFromForm]
 	private ApplicationLoginDto dto { get; set; } = new();
-
 	private string? loginErrorMessage;
 
 	protected override async Task OnInitializedAsync()
@@ -66,9 +56,6 @@
 		}
 
 	}
-
-
-
 	private async Task LoginUser()
 	{
 		var result = await applicationUserService.ApplicationUserSignIn(dto);
@@ -83,6 +70,5 @@
 			loginErrorMessage = "아이디 또는 비밀번호가 올바르지 않습니다.";
 			return;
 		}
-
 	}
 }

@@ -35,10 +35,6 @@ namespace newIdManager.Services
         {
             return await _context.CommentEntities.FindAsync(id);
         }
-        //public async Task GetComment(int id)
-        //{
-        //    //PostId = id;
-        //}
 
         //u
         public async Task UpdateComment(CommentEntity commentEntity)
@@ -46,8 +42,6 @@ namespace newIdManager.Services
             _context.CommentEntities.Update(commentEntity);
             await _context.SaveChangesAsync();
         }
-
-
 
         //d
         public async Task DeleteComment(int id)
@@ -60,8 +54,6 @@ namespace newIdManager.Services
             }
 
         }
-
-
 
 
     }

@@ -15,10 +15,11 @@
 				</div>
 			</NotAuthorized>
 			<Authorized>
-				<div class="top-row px-4">
-					Hello @context.User.Identity?.Name
-					@* <NavLink href="@($"/logout?returnUrl={ngm.ToBaseRelativePath(ngm.Uri)}")">Logout</NavLink> *@
-					<form action="Account/Logout" method="post">
+				<div class="top-row px-4 d-flex align-items-center">
+					<span class="me-2">
+						Hello @context.User.Identity?.Name
+					</span>
+					<form action="Account/Logout" method="post" class="m-0">
 						<AntiforgeryToken />
 						<input type="hidden" name="ReturnUrl" value="@nav.ToBaseRelativePath(nav.Uri)" />
 						<button type="submit" class="btn btn-primary">Logout</button>

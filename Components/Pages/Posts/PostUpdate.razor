@@ -1,12 +1,13 @@
 ﻿@page "/posts/lists/update/{PostId:int}"
-@using newIdManager.Data.Posts
 @using System.Security.Claims
 @inject PostService postService
-@inject NavigationManager ngm
+@inject NavigationManager nav
 @inject AuthenticationStateProvider AuthProvider
 @rendermode InteractiveServer
 
-<h3>PostUpdate</h3>
+<PageTitle>Page Update</PageTitle>
+<h3>글수정</h3>
+<hr/>
 
 <EditForm Model="@dto" OnValidSubmit="@UpdatePost" FormName="CreatePostForm" class="max-w-2xl mx-auto space-y-4">
 	<DataAnnotationsValidator />
@@ -29,9 +30,7 @@
 	</div>
 </EditForm>
 
-
 @code {
-
 	[Parameter]
 	public int PostId { get; set; }
 
@@ -40,24 +39,22 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		// var authState = await AuthProvider.GetAuthenticationStateAsync();
-		// var user = authState.User;
-		// if (user?.Identity != null && user.Identity.IsAuthenticated)
-		// {
-		// 	dto.Author = user.Identity?.Name ?? string.Empty;
-		// }
+		var authState = await AuthProvider.GetAuthenticationStateAsync();
+		var user = authState.User;
+		if (user?.Identity != null && user.Identity.IsAuthenticated)
+		{
+			dto.Author = user.Identity?.Name ?? string.Empty;
+		}
 		dto = await postService.GetPostByIdAsync(PostId);
-
 	}
-
 	private async Task UpdatePost()
 	{
 		await postService.UpdatePostAsync(dto, PostId);
-		ngm.NavigateTo($"/posts/lists/{PostId}", forceLoad: true);
+		nav.NavigateTo($"/posts/lists/{PostId}", forceLoad: true);
 	}
 	private void CancelPost()
 	{
 		dto = new();
-		ngm.NavigateTo("/posts/lists?page=1", forceLoad: true);
+		nav.NavigateTo("/posts/lists?page=1", forceLoad: true);
 	}
 }
