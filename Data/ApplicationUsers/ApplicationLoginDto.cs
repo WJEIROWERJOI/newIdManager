@@ -7,6 +7,7 @@ namespace newIdManager.Data.ApplicationUsers
         [Required(ErrorMessage = "아이디를 입력하세요")]
         public string UserName { get; set; } = string.Empty;
         [Required(ErrorMessage = "비번을 입력하세요")]
+        [DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
         public bool RememberMe { get; set; } = false;
     }

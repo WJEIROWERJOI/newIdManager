@@ -1,20 +1,17 @@
 ﻿@page "/posts/lists"
 @using Microsoft.EntityFrameworkCore
-@using newIdManager.Data.Posts
 @inject ApplicationDbContext context
 @inject PostService pstService
 @rendermode InteractiveServer
 @inject NavigationManager nav
 
-<h3>PostLists</h3>
-
-<!-- 검색 영역 -->
+<PageTitle>Posts List</PageTitle>
+<h3>게시판</h3>
+<hr />
 
 <div style="display:flex;justify-content: flex-end;">
-
 	<div class="input-group" style="max-width: fit-content;">
-	
-	@if (!string.IsNullOrWhiteSpace(searchUser))
+		@if (!string.IsNullOrWhiteSpace(searchUser))
 		{
 			<button @onclick="CancelSearch" class="btn btn-secondary">검색 취소</button>
 		}
@@ -25,8 +22,6 @@
 		</select>
 		<InputText class="form-control" @bind-Value="@searchUser" />
 		<button type="button" class="btn btn-primary" @onclick="SearchUser">검색</button>
-
-		
 	</div>
 </div>
 
@@ -47,7 +42,6 @@
 	<tbody class="text-center">
 		@foreach (var pst in posts)
 		{
-
 			<tr>
 				<td>@pst.Id</td>
 				<td><a href="/posts/lists/@pst.Id" @onclick="()=>ViewPlus(pst.Id)">@pst.Title</a></td>
@@ -57,9 +51,6 @@
 				<td>@pst.UpdatedAt.ToString("MM월dd일 hh:mm")</td>
 				<td>@pst.CommentCount</td>
 				<td>@pst.Views</td>
-				@* <td> *@
-				@*         <button @onclick="() => BeginEdit(usr)">수정</button> *@
-
 				<AuthorizeView Roles="Admin">
 					<Authorized>
 						<button class="btn btn-primary btn-sm" @onclick="() => deletePost(pst.Id)">삭제</button>
@@ -70,17 +61,16 @@
 				</AuthorizeView>
 				@*     </td> *@
 			</tr>
-
 		}
 	</tbody>
 </table>
+
 @* <div style="display: flex; justify-content: flex-end; margin-top: 10px;"> *@
 <div class="d-flex justify-content-center mt-3">
 	<NavLink class="btn btn-primary" href="/posts/create">
 		글쓰기
 	</NavLink>
 </div>
-
 
 <!-- 페이징 컴포넌트 -->
 <Pagination TotalPages="@totalPage" CurrentPage="@Page" />
@@ -103,9 +93,6 @@
 	private int totalPage;
 	private int pageSize = 3;
 
-
-
-
 	// protected override async Task OnInitializedAsync()
 	// {
 	// 	posts = await context.PostEntities.ToListAsync();
@@ -114,7 +101,6 @@
 	// 		await pstService.CountCommentAsync(pst.Id);
 	// 	}
 	// }
-
 
 	protected override async Task OnParametersSetAsync()
 	{

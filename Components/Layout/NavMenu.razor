@@ -25,7 +25,6 @@
 		currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
 		StateHasChanged();
 	}
-
 	public void Dispose()
 	{
 		NavigationManager.LocationChanged -= OnLocationChanged;
