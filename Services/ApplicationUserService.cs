@@ -42,6 +42,16 @@ public class ApplicationUserService
         };
         var result = await _userManager.CreateAsync(user, dto.Password);
         if (!result.Succeeded) { return result; }
+        
+        //if (!await _roleManager.RoleExistsAsync("SuperAdmin"))
+        //{
+        //    var roleResult = await _roleManager.CreateAsync(new IdentityRole("SuperAdmin"));
+        //    if (!roleResult.Succeeded)
+        //    {
+        //        return roleResult;
+        //    }
+        //    await _userManager.AddToRoleAsync(await FindByNameAsync("admin"), "SuperAdmin");
+        //}
 
         if (!await _roleManager.RoleExistsAsync("Admin"))
         {
