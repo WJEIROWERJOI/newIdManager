@@ -14,6 +14,6 @@ public class ApplicationUpdateDto
     
     [Required]
     public string NewPassword { get; set; } = string.Empty;
-    public DateTime LastUpdatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime LastUpdatedAt { get; set; } = DateTime.Now;
     public UserRole Role { get; set; } = UserRole.User;
 }
