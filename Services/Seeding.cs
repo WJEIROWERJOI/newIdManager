@@ -47,7 +47,8 @@ namespace newIdManager.Services
                     }
                 };
                 context.ApplicationUsers.AddRange(usrs);
-                await context.SaveChangesAsync();            }
+                await context.SaveChangesAsync();
+            }
 
             var users = context.ApplicationUsers.ToList();
             foreach (var usr in users)

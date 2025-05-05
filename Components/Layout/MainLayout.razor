@@ -17,7 +17,7 @@
 			<Authorized>
 				<div class="top-row px-4 d-flex align-items-center">
 					<span class="me-2">
-						Hello @context.User.Identity?.Name
+						<a href="/user">Hello @context.User.Identity?.Name</a>
 					</span>
 					<form action="Account/Logout" method="post" class="m-0">
 						<AntiforgeryToken />

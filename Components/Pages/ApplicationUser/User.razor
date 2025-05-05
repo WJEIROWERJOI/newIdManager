@@ -1,0 +1,24 @@
+﻿@page "/user"
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+@attribute [Authorize]
+@inject AuthenticationStateProvider auth
+
+<PageTitle>User</PageTitle>
+<h2>사용자</h2>
+
+user
+
+
+
+@code {
+	private ClaimsPrincipal? user;
+
+
+	protected async override Task OnInitializedAsync()
+	{
+		var authState = await auth.GetAuthenticationStateAsync();
+		user = authState.User;
+	}
+
+}
