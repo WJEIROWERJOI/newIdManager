@@ -1,14 +1,94 @@
+@inject IJSRuntime JS
 
-<h2>Home</h2>
+<button @onclick="ShowAlert">Alert 메시지 띄우기</button>
 
-<div class="mb-3">
-	<label for="exampleFormControlInput1" class="form-label">Email address</label>
-	<input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-</div>
-<div class="mb-3">
-	<label for="exampleFormControlTextarea1" class="form-label">Example textarea</label>
-	<textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-</div>
-@code{
+<div id="liveAlertPlaceholder"></div>
+<button type="button" class="btn btn-primary" id="liveAlertBtn">Show live alert</button>
+
+
+<button type="button" class="btn btn-primary" @onclick="hhoello">button Test</button>
+@if (IsVisible)
+{
+	<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+		<div>Hello World!</div>
+		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
+}
+
+<script>
+	window.showLiveAlert = function(message, type) {
+	const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
+	const wrapper = document.createElement('div');
+	wrapper.innerHTML = [
+	`<div class="alert alert-${type} alert-dismissible fade show" role="alert">`,
+	`   <div>${message}</div>`,
+	'   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+	'</div>'
+	].join('');
+
+	alertPlaceholder.append(wrapper);
+
+	// 3초 후 자동 제거
+	setTimeout(() => {
+	wrapper.remove();
+	}, 3000);
+	};
+
+
+	const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
+	const appendAlert = (message, type) => {
+	const wrapper = document.createElement('div')
+	wrapper.innerHTML = [
+	`<div class="alert alert-${type} alert-dismissible" role="alert">`,
+	`   <div>${message}</div>`,
+	'   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+	'</div>'
+	].join('')
+
+	alertPlaceholder.append(wrapper);
+
+	setTimeout(() => {
+	wrapper.remove();
+	}, 3000);
+	};
+
+	const alertTrigger = document.getElementById('liveAlertBtn')
+	if (alertTrigger) {
+	alertTrigger.addEventListener('click', () => {
+	appendAlert('Nice, you triggered this alert message!', 'success')
+	})
+	}
+
+
+
+
+</script>
+<div>@dynamicContent</div>
+
+
+@code {
+	private bool IsVisible = false;
+
+	private async Task ShowAlert()
+	{
+		await JS.InvokeVoidAsync("showLiveAlert", "Nice, you triggered this alert message!", "success");
+	}
+
+	private async Task hhoello()
+	{
+		IsVisible = true;
+		StateHasChanged();
+		await Task.Delay(3000);
+		IsVisible = false;
+		StateHasChanged();
+	}
+
+	RenderFragment dynamicContent = builder =>
+	{
+		builder.OpenElement(0, "p");
+		builder.AddContent(1, "이것은 동적으로 생성된 내용입니다!");
+		builder.CloseElement();
+	};
+
 
 }

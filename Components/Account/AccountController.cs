@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using newIdManager.Data.ApplicationUsers;
 
-namespace newIdManager.Components
+namespace newIdManager.Components.Account
 {
     [ApiController]
     public class AccountController : ControllerBase
