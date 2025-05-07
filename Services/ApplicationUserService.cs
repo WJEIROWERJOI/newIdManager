@@ -24,7 +24,6 @@ public class ApplicationUserService
         _signinManager = signinManager;
         _roleManager = roleManager;
     }
-
     //C
     public async Task<IdentityResult> RegisterAsync(ApplicationRegisterDto dto)
     {
@@ -203,12 +202,10 @@ public class ApplicationUserService
             LastUpdatedAt = user.LastUpdatedAt == default ? DateTime.MinValue : user.LastUpdatedAt
         }).ToList();
     }
-
     public async Task<int> GetNumberOfUser()
     {
         return await _context.ApplicationUsers.CountAsync();
     }
-
     //U
     public async Task<IdentityResult> UpdateAsync(ApplicationUpdateDto dto)
     {
@@ -263,7 +260,6 @@ public class ApplicationUserService
             return IdentityResult.Failed(new IdentityError { Description = "fail login" });
         }
     }
-
     public async Task ApplicationUserLogOut()
     {
         await _signinManager.SignOutAsync();
