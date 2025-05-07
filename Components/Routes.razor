@@ -2,7 +2,10 @@
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
             <NotAuthorized>
-                <RedirectToLogin />
+                <LayoutView Layout="typeof(Layout.MainLayout)">
+                    <h1>Not Authorized</h1>
+                    <p>You are not authorized to access this page.</p>
+                </LayoutView>
             </NotAuthorized>
         </AuthorizeRouteView>
         <FocusOnNavigate RouteData="routeData" Selector="h1" />

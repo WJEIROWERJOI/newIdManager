@@ -53,7 +53,6 @@ namespace newIdManager.Services
                 .Take(amount)
                 .ToListAsync();
         }
-
         public async Task<List<PostEntity>> SearchPostsAsync(string str, string target, int Page, int amount)
         {
             var posts = new List<PostEntity>();
@@ -116,7 +115,7 @@ namespace newIdManager.Services
         public async Task<PostCreateDto> GetPostByIdAsync(int id)
         {
             var temp = await _context.PostEntities.FindAsync(id);
-            if(temp is null) { return new(); }
+            if (temp is null) { return new(); }
             return new PostCreateDto()
             {
                 Title = temp.Title,
@@ -143,6 +142,8 @@ namespace newIdManager.Services
         {
             var pst = await _context.PostEntities.FindAsync(id);
             if (pst is not null) { _context.PostEntities.Remove(pst); }
+            var cmt = await _context.CommentEntities.Where(p => p.PostId == id).ToListAsync();
+            if (cmt is not null) { _context.CommentEntities.RemoveRange(cmt); }
             await _context.SaveChangesAsync();
         }
 

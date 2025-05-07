@@ -28,7 +28,8 @@
 	private string? editingUserName = null;
 	private ApplicationUpdateDto updateUser = new();
 	private string? message;
-	private bool IsVisible = false;
+	[Parameter]
+	public bool IsVisible {get;set;}= false;
 	private string searchUser = string.Empty;
 	private string searchTarget = "UserName";
 
