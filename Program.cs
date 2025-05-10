@@ -16,11 +16,12 @@ builder.Services.AddRazorComponents()
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
+
 builder.Services.AddScoped<ApplicationUserService>();
 builder.Services.AddScoped<BoardService>();
-
 builder.Services.AddScoped<CommentService>();
 builder.Services.AddScoped<PostService>();
+
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
 
