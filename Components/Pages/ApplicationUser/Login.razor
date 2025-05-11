@@ -47,7 +47,6 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-
 		var authState = await auth.GetAuthenticationStateAsync();
 		var user = authState.User;
 		if (applicationUserService.IsUserLogin(user))
@@ -56,9 +55,6 @@
 		}
 
 	}
-
-
-
 	private async Task LoginUser()
 	{
 		var result = await applicationUserService.ApplicationUserSignIn(dto);
