@@ -53,22 +53,22 @@ public class ApplicationUserService
         //    await _userManager.AddToRoleAsync(await FindByNameAsync("admin"), "SuperAdmin");
         //}
 
-        if (!await _roleManager.RoleExistsAsync("Admin"))
-        {
-            var roleResult = await _roleManager.CreateAsync(new IdentityRole("Admin"));
-            if (!roleResult.Succeeded)
-            {
-                return roleResult;
-            }
-        }
-        if (!await _roleManager.RoleExistsAsync("User"))
-        {
-            var roleResult = await _roleManager.CreateAsync(new IdentityRole("User"));
-            if (!roleResult.Succeeded)
-            {
-                return roleResult;
-            }
-        }
+        // if (!await _roleManager.RoleExistsAsync("Admin"))
+        // {
+        //     var roleResult = await _roleManager.CreateAsync(new IdentityRole("Admin"));
+        //     if (!roleResult.Succeeded)
+        //     {
+        //         return roleResult;
+        //     }
+        // }
+        // if (!await _roleManager.RoleExistsAsync("User"))
+        // {
+        //     var roleResult = await _roleManager.CreateAsync(new IdentityRole("User"));
+        //     if (!roleResult.Succeeded)
+        //     {
+        //         return roleResult;
+        //     }
+        // }
 
         result = await _userManager.AddToRoleAsync(user, dto.Role.ToString());
 

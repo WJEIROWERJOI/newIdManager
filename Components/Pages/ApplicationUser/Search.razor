@@ -20,7 +20,9 @@
 	}
 </style>
 
-
+@if(IsVisible){
+	<p></p>
+}
 <Pagination TotalPages="@totalPage" CurrentPage="@Page" />
 
 @code {

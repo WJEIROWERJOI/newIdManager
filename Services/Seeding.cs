@@ -1,63 +1,66 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using newIdManager.Data;
 using newIdManager.Data.ApplicationUsers;
 
 namespace newIdManager.Services
 {
-    public static class Seeding
+    public class Seeding
     {
-        public static async Task SeedingBoard(ApplicationDbContext context, RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+        private readonly ApplicationDbContext _context;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        public Seeding(ApplicationDbContext context, RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
         {
-            if (!context.Boards.Any())
+            _context = context;
+            _roleManager = roleManager;
+            _userManager = userManager;
+        }
+        public async Task SeedAsync()
+        {
+            if (!_context.Boards.Any())
             {
-                List<Board> brds = new List<Board> {
+                var boards = new List<Board>
+                {
                     new Board { Title = "User List", Url = "/list", Img = "bi bi-person-fill-nav-menu" },
                     new Board { Title = "User Register", Url = "/register", Img = "bi bi-lock-nav-menu" },
                     new Board { Title = "Post", Url = "/posts/lists", Img = "bi bi-list-nested-nav-menu" }
                 };
-                context.Boards.AddRange(brds);
+                _context.Boards.AddRange(boards);
+                await _context.SaveChangesAsync();
             }
 
-            if (!await roleManager.RoleExistsAsync("Admin"))
+            var roles = new List<string> { "SuperAdmin", "Admin", "User" };
+            foreach (var role in roles)
             {
-                await roleManager.CreateAsync(new IdentityRole("Admin"));
-            }
-            if (!await roleManager.RoleExistsAsync("User"))
-            {
-                await roleManager.CreateAsync(new IdentityRole("User"));
-            }
-
-            if (!context.ApplicationUsers.Any())
-            {
-                List<ApplicationUser> usrs = new List<ApplicationUser>
+                if (!await _roleManager.RoleExistsAsync(role))
                 {
-                    new ApplicationUser
-                    {
-                        UserName = "admin",
-                        Email = "admin@admin.com",
-                        PasswordHash = string.Empty,
-                        Role = UserRole.Admin
-                    },
-                    new ApplicationUser
-                    {
-                        UserName = "test1",
-                        Email = "test1@test1.com",
-                        PasswordHash = string.Empty,
-                        Role = UserRole.Admin
-                    }
+                    await _roleManager.CreateAsync(new IdentityRole(role));
+                }
+            }
+
+            if (!await _userManager.Users.AnyAsync())
+            {
+                var users = new List<ApplicationUser>
+                {
+                    new ApplicationUser { UserName = "admin", Email = "admin@admin.com", PasswordHash = "admin", Role = UserRole.Admin },
+                    new ApplicationUser { UserName = "test1", Email = "test1@test1.com", PasswordHash = "test1", Role = UserRole.Admin }
                 };
-                context.ApplicationUsers.AddRange(usrs);
-                await context.SaveChangesAsync();            }
 
-            var users = context.ApplicationUsers.ToList();
-            foreach (var usr in users)
-            {
-                var identityUser = await userManager.FindByIdAsync(usr.Id);
-                if (identityUser != null && !await userManager.IsInRoleAsync(identityUser, "Admin"))
+                foreach (var user in users)
                 {
-                    await userManager.AddToRoleAsync(identityUser, "Admin");
+                    await _userManager.CreateAsync(user, user.PasswordHash ?? string.Empty);
+                    if (user.UserName == "admin")
+                    {
+                        await _userManager.AddToRolesAsync(user, new[] { "SuperAdmin", "Admin" });
+                    }
+                    else
+                    {
+                        await _userManager.AddToRoleAsync(user, "Admin");
+                    }
                 }
             }
         }
+
     }
 }
