@@ -3,7 +3,7 @@
 @using System.Security.Claims
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<PageTitle>User Info</PageTitle>
+<PageTitle>User info</PageTitle>
 
 <h3>사용자 정보</h3>
 
@@ -40,8 +40,8 @@ else
 }
 
 @code {
-    private ClaimsPrincipal user;
-    private PropertyInfo[] identityProperties;
+    private ClaimsPrincipal? user;
+    private PropertyInfo[] identityProperties {get;set;} = Array.Empty<PropertyInfo>();
 
     protected override async Task OnInitializedAsync()
     {

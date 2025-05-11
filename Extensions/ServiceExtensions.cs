@@ -14,6 +14,7 @@ public static class ServiceExtensions
         services.AddScoped<PostService>();
         services.AddScoped<IdentityUserAccessor>();
         services.AddScoped<IdentityRedirectManager>();
+        services.AddScoped<Seeding>();
         services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
         services.AddRazorComponents()
             .AddInteractiveServerComponents();

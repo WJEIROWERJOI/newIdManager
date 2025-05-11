@@ -11,8 +11,8 @@ using newIdManager.Data;
 namespace newIdManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250502155348_sqlite.local_migration_310")]
-    partial class sqlitelocal_migration_310
+    [Migration("20250511085035_InitialStart")]
+    partial class InitialStart
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

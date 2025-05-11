@@ -142,7 +142,10 @@ namespace newIdManager.Services
         public async Task DeletePost(int id)
         {
             var pst = await _context.PostEntities.FindAsync(id);
-            if (pst is not null) { _context.PostEntities.Remove(pst); }
+            if (pst is not null) { _context.PostEntities.Remove(pst); 
+            var cmt = await _context.CommentEntities.Where(p => p.PostId == id).ToListAsync();
+            if (cmt is not null) { _context.CommentEntities.RemoveRange(cmt); }
+            }
             await _context.SaveChangesAsync();
         }
 
